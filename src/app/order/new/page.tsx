@@ -1,5 +1,5 @@
 'use client';
-import { createOrder } from '@/src/app/actions/createOrder';
+import { createOrder } from '@/app/actions/createOrder';
 
 export default function NewOrderPage() {
   return (

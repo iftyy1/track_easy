@@ -1,5 +1,5 @@
-import { db } from '../../../../db';
-import { orders } from '../../../../db/schema';
+import { db } from '@/db';
+import { orders } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export default async function OrderPage({ params }: { params: { id: string } }) {
