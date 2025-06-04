@@ -1,7 +1,7 @@
 'use server';
 
-import { db } from '../../db';
-import { orders } from '../../db/schema/orders';
+import { db } from '../../server/db';
+import { orders } from '../../server/db/schema/orders';
 import { redirect } from 'next/navigation';
 
 export async function createOrder(data: FormData) {
