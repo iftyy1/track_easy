@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "drizzle-orm": "^0.43.1",
+    "nanoid": "^5.1.6",
     "next": "15.3.2",
     "next-auth": "^4.24.11",
     "pg": "^8.16.0",

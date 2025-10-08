@@ -3,6 +3,7 @@ import { pgTable, uuid, varchar, text } from 'drizzle-orm/pg-core';
 
 export const orders = pgTable('orders', {
   id: uuid('id').defaultRandom().primaryKey(),
+  shareableLink: varchar('shareable_link', { length: 21 }).notNull().unique(),
   name: varchar('name', { length: 255 }),
   address: text('address'),
   phone: varchar('phone', { length: 20 }),
