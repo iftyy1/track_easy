@@ -18,12 +18,20 @@ export default async function LandingPage() {
         </p>
 
         {session && (
-          <Link
-            href="/order/new"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
-          >
-            Create New Order
-          </Link>
+          <div className="flex gap-4 justify-center">
+            <Link
+              href="/orders"
+              className="inline-block bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+            >
+              View All Orders
+            </Link>
+            <Link
+              href="/order/new"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+            >
+              Create New Order
+            </Link>
+          </div>
         )}
       </div>
 

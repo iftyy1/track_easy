@@ -14,8 +14,6 @@ export const authOptions: AuthOptions = {
       },
       
       async authorize(credentials) {
-        
-
         if (!credentials?.email || !credentials?.password) return null;
 
         const [user] = await db.select().from(users).where(eq(users.email, credentials.email));
@@ -29,9 +27,27 @@ export const authOptions: AuthOptions = {
     }),
   ],
   secret: process.env.AUTH_SECRET,
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
   pages: {
-    signIn: "/auth/login",
-    error: "/auth/login",
+    signIn: "/login",
+    error: "/login",
   },
 };
 
