@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/server/db";
 import { users } from "@/server/db/schema/auth-users";
 import { eq } from "drizzle-orm";
+import { scryptSync } from 'crypto';
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -19,8 +20,15 @@ export const authOptions: AuthOptions = {
         const [user] = await db.select().from(users).where(eq(users.email, credentials.email));
         if (!user) return null;
 
-        const passwordValid = user.password === credentials.password;
-        if (!passwordValid) return null;
+  // password is stored as "salt$hash" using scrypt
+  
+  // const passwordValid = user.password === credentials.password;
+  //       if (!passwordValid) return null;
+  
+  const [salt, hash] = String(user.password).split('$');
+  const derived = scryptSync(credentials.password, salt, 64).toString('hex');
+  const passwordValid = hash === derived;
+  if (!passwordValid) return null;
 
         return { id: String(user.id), email: user.email, name: user.name };
       },
