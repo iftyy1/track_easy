@@ -8,6 +8,34 @@
       "when": 1759954054095,
       "tag": "0000_misty_centennial",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770345110569,
+      "tag": "0001_blue_pandemic",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770347982622,
+      "tag": "0002_curious_songbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770350128074,
+      "tag": "0003_cultured_vision",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770352237372,
+      "tag": "0004_windy_earthquake",
+      "breakpoints": true
     }
   ]
 }

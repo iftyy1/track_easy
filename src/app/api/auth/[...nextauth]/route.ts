@@ -3,7 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/server/db";
 import { users } from "@/server/db/schema/auth-users";
 import { eq } from "drizzle-orm";
-import { scryptSync } from 'crypto';
+import { UserRole } from "@/types/next-auth";
+import { scryptSync } from "crypto";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -13,7 +14,7 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      
+
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
@@ -30,25 +31,32 @@ export const authOptions: AuthOptions = {
   const passwordValid = hash === derived;
   if (!passwordValid) return null;
 
-        return { id: String(user.id), email: user.email, name: user.name };
+        return {
+          id: String(user.id),
+          email: user.email,
+          name: user.name,
+          role: (user.role as UserRole) || 'user'
+        };
       },
     }),
   ],
   secret: process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
+        session.user.role = token.role as UserRole;
       }
       return session;
     },
@@ -61,4 +69,3 @@ export const authOptions: AuthOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-

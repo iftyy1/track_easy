@@ -9,11 +9,11 @@ interface StatusDropdownProps {
 }
 
 const statusOptions = [
-  { value: 'Processing', label: 'Processing', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'Ready', label: 'Ready', color: 'bg-blue-100 text-blue-800' },
-  { value: 'Shipped', label: 'Shipped', color: 'bg-purple-100 text-purple-800' },
-  { value: 'Delivered', label: 'Delivered', color: 'bg-green-100 text-green-800' },
-  { value: 'Cancelled', label: 'Cancelled', color: 'bg-red-100 text-red-800' },
+  { value: 'Processing', label: 'Processing', color: 'bg-gray-100 text-gray-700' },
+  { value: 'Ready', label: 'Ready', color: 'bg-black text-white' },
+  { value: 'Shipped', label: 'Shipped', color: 'bg-black text-white' },
+  { value: 'Returned', label: 'Returned', color: 'bg-white border border-gray-200 text-gray-700' },
+  { value: 'Cancelled', label: 'Cancelled', color: 'bg-white border border-gray-200 text-gray-500 line-through' },
 ];
 
 export default function StatusDropdown({ orderId, currentStatus }: StatusDropdownProps) {
@@ -76,11 +76,11 @@ export default function StatusDropdown({ orderId, currentStatus }: StatusDropdow
       {isOpen && (
         <>
           {/* Backdrop to close dropdown */}
-          <div 
-            className="fixed inset-0 z-40" 
+          <div
+            className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* Dropdown menu */}
           <div className="absolute z-50 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
             <div className="py-1">
@@ -88,11 +88,10 @@ export default function StatusDropdown({ orderId, currentStatus }: StatusDropdow
                 <button
                   key={option.value}
                   onClick={() => handleStatusChange(option.value)}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition duration-200 flex items-center text-gray-900 ${
-                    option.value === status ? 'bg-gray-50 font-semibold' : ''
-                  }`}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition duration-200 flex items-center text-gray-900 cursor-pointer ${option.value === status ? 'bg-gray-50 font-semibold' : ''
+                    }`}
                 >
-                  <span className={`inline-block w-3 h-3 rounded-full mr-3 ${option.color.split(' ')[0]}`}></span>
+                  <span className={`inline-block w-2 h-2 rounded-full mr-3 ${option.value === status ? 'bg-black' : 'bg-gray-300'}`}></span>
                   <span className="text-gray-900">{option.label}</span>
                 </button>
               ))}

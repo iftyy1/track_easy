@@ -1,57 +1,109 @@
 import Link from 'next/link';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Session } from "next-auth";
-
-
 
 export default async function LandingPage() {
-  const session: Session | null = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
+
   return (
-      <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-4">
-      <div className="text-center max-w-2xl">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Effortless Order Tracking for Your Business
+    <main className="min-h-screen bg-background text-foreground selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
+      {/* Navigation - Minimal */}
+      <nav className="w-full py-6 px-6 md:px-12 flex justify-between items-center border-b border-gray-100 dark:border-gray-800">
+        <div className="font-serif text-2xl font-bold tracking-tight">TrackEasy.</div>
+        <div className="flex gap-4 items-center">
+          {session ? (
+            <Link href="/dashboard" className="text-sm font-medium hover:underline underline-offset-4">
+              Dashboard
+            </Link>
+          ) : (
+            <Link href="/login" className="text-sm font-medium hover:underline underline-offset-4">
+              Log in
+            </Link>
+          )}
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="px-6 md:px-12 py-20 md:py-32 flex flex-col items-center text-center max-w-5xl mx-auto">
+        <h1 className="font-serif text-6xl md:text-8xl font-medium tracking-tight leading-tight mb-8">
+          The new <span className='bg-white text-black'>standard</span> for <br /> <span className="italic underline">order tracking</span>.
         </h1>
-        <p className="text-gray-600 text-lg mb-8">
-          Create, share, and track orders with a single link. Streamline your workflow and give your customers real-time updates.
+        <p className="max-w-xl text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
+          Create, share, and track orders with effortless simplicity. A minimal tool for modern businesses who value clarity over clutter.
         </p>
 
-        {session && (
-          <div className="flex gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+          {session ? (
             <Link
-              href="/orders"
-              className="inline-block bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+              href="/dashboard"
+              className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-full bg-foreground px-8 font-medium text-background transition-all duration-300 hover:opacity-90 sm:w-auto"
             >
-              View All Orders
+              <span className="mr-2">Go to Dashboard</span>
+              <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
+          ) : (
             <Link
-              href="/order/new"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+              href="/login"
+              className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-full bg-foreground px-8 font-medium text-background transition-all duration-300 hover:opacity-90 sm:w-auto"
             >
-              Create New Order
+              <span className="mr-2">Start Tracking</span>
+              <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
-          </div>
-        )}
-      </div>
+          )}
+          <Link
+            href="#how-it-works"
+            className="inline-flex h-12 items-center justify-center rounded-full border border-gray-200 dark:border-gray-800 px-8 font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-900 sm:w-auto"
+          >
+            How it works
+          </Link>
+        </div>
+      </section>
 
-        <section className="mt-20 w-full max-w-4xl">
-          <h2 className="text-2xl font-semibold text-center mb-6">How it works</h2>
-          <div className="grid md:grid-cols-3 gap-6 text-center">
-            <div className="p-4 bg-white shadow rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">1. Fill Order Info</h3>
-              <p className="text-gray-600">Add the customer name, address, phone, and product name.</p>
-            </div>
-            <div className="p-4 bg-white shadow rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">2. Get Shareable Link</h3>
-              <p className="text-gray-600">A unique link is generated for each order.</p>
-            </div>
-            <div className="p-4 bg-white shadow rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">3. Customer Tracks Status</h3>
-              <p className="text-gray-600">Customers see real-time updates on their order status.</p>
-            </div>
+      {/* Feature Section / How it works */}
+      <section id="how-it-works" className="px-6 md:px-12 py-24 border-t border-gray-100 dark:border-gray-800">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-16">
+            <h2 className="font-serif text-4xl md:text-5xl mb-6">Designed for focus.</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-lg">Everything you need to manage orders, nothing you don't. Stripped back to the essentials.</p>
           </div>
-        </section>
-      </main>
+
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              {
+                step: "01",
+                title: "Input Details",
+                description: "Enter customer information and product details in a distraction-free interface."
+              },
+              {
+                step: "02",
+                title: "Generate Link",
+                description: "Instantly create a secure, shareable link unique to each order. No logins required for customers."
+              },
+              {
+                step: "03",
+                title: "Real-time Updates",
+                description: "Update statuses with a click. Customers stay informed without endless email chains."
+              }
+            ].map((feature) => (
+              <div key={feature.step} className="group border-t border-gray-200 dark:border-gray-800 pt-8 transition-colors hover:border-black dark:hover:border-white">
+                <span className="font-mono text-sm text-gray-400 mb-4 block">{feature.step}</span>
+                <h3 className="font-serif text-2xl mb-3 group-hover:translate-x-1 transition-transform duration-300">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="px-6 md:px-12 py-12 border-t border-gray-100 dark:border-gray-800 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="font-serif font-bold text-foreground">TrackEasy.</div>
+        <div>
+          © {new Date().getFullYear()} TrackEasy Inc.
+        </div>
+      </footer>
+    </main>
   );
 }
