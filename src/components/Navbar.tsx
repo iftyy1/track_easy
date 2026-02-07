@@ -1,10 +1,10 @@
-'use client';
-
-import { signOut, useSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import Link from 'next/link';
+import LogoutButton from './LogoutButton';
 
-export default function Navbar() {
-  const { data: session, status } = useSession();
+export default async function Navbar() {
+  const session = await getServerSession(authOptions);
 
   return (
     <nav className="w-full flex justify-between items-center p-4 bg-white shadow">
@@ -13,9 +13,7 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-4">
-        {status === 'loading' ? (
-          <p>Loading...</p>
-        ) : session?.user ? (
+        {session?.user ? (
           <>
             <Link
               href="/orders"
@@ -30,28 +28,15 @@ export default function Navbar() {
               New Order
             </Link>
             <span className="text-gray-700">Welcome, {session.user.name}</span>
-            <button
-              onClick={() => signOut()}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200"
-            >
-              Logout
-            </button>
+            <LogoutButton />
           </>
         ) : (
-          <>
-            <Link
-              href="/login"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
-            >
-              Sign Up
-            </Link>
-          </>
+          <Link
+            href="/login"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Sign In
+          </Link>
         )}
       </div>
     </nav>

@@ -10,7 +10,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 export async function updateOrderStatus(orderId: string, newStatus: string) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return { success: false, error: 'Unauthorized' };
     }
@@ -20,14 +20,14 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
       .set({ status: newStatus })
       .where(and(eq(orders.id, orderId), eq(orders.userId, session.user.id)))
       .returning();
-    
+
     if (result.length === 0) {
       return { success: false, error: 'Order not found or unauthorized' };
     }
-    
+
     revalidatePath('/orders');
     revalidatePath(`/order/${orderId}`);
-    
+
     return { success: true };
   } catch (error) {
     console.error('Error updating order status:', error);

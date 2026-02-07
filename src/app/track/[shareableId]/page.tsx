@@ -1,58 +1,94 @@
 import { db } from '@/server/db';
 import { orders } from '@/server/db/schema/orders';
 import { eq } from 'drizzle-orm';
+import Link from 'next/link';
 
-export default async function TrackOrderPage({ params }: { params: { shareableId: string } }) {
-  const [order] = await db.select().from(orders).where(eq(orders.shareableLink, params.shareableId));
+const statusStyles: Record<string, { bg: string; dot: string; text: string }> = {
+  Processing: { bg: 'bg-gray-50', dot: 'bg-gray-400', text: 'text-gray-700' },
+  Ready: { bg: 'bg-gray-50', dot: 'bg-black', text: 'text-black font-semibold' },
+  Shipped: { bg: 'bg-black text-white', dot: 'bg-white', text: 'text-white font-semibold' },
+  Returned: { bg: 'bg-gray-50', dot: 'bg-gray-400', text: 'text-gray-500 line-through' },
+  Cancelled: { bg: 'bg-red-50', dot: 'bg-red-500', text: 'text-red-900' },
+};
 
-  if (!order) return <p>Order not found</p>;
+export default async function TrackOrderPage({ params }: { params: Promise<{ shareableId: string }> }) {
+  const { shareableId } = await params;
+  const [order] = await db.select().from(orders).where(eq(orders.shareableLink, shareableId));
+
+  if (!order) return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <p className="text-xl font-serif mb-4">Order not found</p>
+      <Link href="/" className="text-sm underline underline-offset-4">Return Home</Link>
+    </div>
+  );
+
+  const status = order.status || 'Processing';
+  const styles = statusStyles[status] || statusStyles.Processing;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-4">
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Tracking</h1>
-          <p className="text-gray-600">Track your order status in real-time</p>
+    <div className="min-h-screen bg-white text-black p-4 flex flex-col items-center justify-center">
+      <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-2xl shadow-sm p-8 md:p-12">
+        <div className="text-center mb-10">
+          <Link href="/" className="font-serif text-2xl font-bold tracking-tight mb-6 inline-block opacity-50 hover:opacity-100 transition-opacity">
+            TrackEasy.
+          </Link>
+          <h1 className="text-4xl font-serif font-medium text-black mb-2 tracking-tight">
+            Order Tracking
+          </h1>
+          <p className="text-gray-500">
+            Real-time status for order <span className="font-mono text-black">#{shareableId}</span>
+          </p>
         </div>
-        
-        <div className="space-y-4">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold text-gray-800 mb-3">Order Details</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div className="space-y-8">
+          {/* Status Banner */}
+          <div className={`${styles.bg} p-6 rounded-xl flex items-center justify-between transition-colors duration-300`}>
+            <div className="flex items-center gap-4">
+              <div className={`w-3 h-3 ${styles.dot} rounded-full`}></div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Customer Name</label>
-                <p className="text-gray-900">{order.name}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-600">Phone Number</label>
-                <p className="text-gray-900">{order.phone}</p>
-              </div>
-              <div className="md:col-span-2">
-                <label className="text-sm font-medium text-gray-600">Delivery Address</label>
-                <p className="text-gray-900">{order.address}</p>
-              </div>
-              <div className="md:col-span-2">
-                <label className="text-sm font-medium text-gray-600">Product</label>
-                <p className="text-gray-900">{order.productName}</p>
+                <p className={`text-sm uppercase tracking-wider opacity-70 ${styles.text.includes('text-white') ? 'text-white' : 'text-gray-500'}`}>Current Status</p>
+                <p className={`text-xl ${styles.text}`}>{status}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-900 mb-2">Current Status</h3>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-              <span className="text-blue-900 font-medium">{order.status}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+            <div>
+              <h3 className="font-serif text-lg border-b border-gray-100 pb-2 mb-4">Customer Details</h3>
+              <dl className="space-y-4 text-sm">
+                <div>
+                  <dt className="text-gray-500 mb-1">Name</dt>
+                  <dd className="font-medium text-lg">{order.name}</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-500 mb-1">Contact</dt>
+                  <dd className="font-medium">{order.phone}</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-500 mb-1">Delivery Address</dt>
+                  <dd className="font-medium">{order.address}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div>
+              <h3 className="font-serif text-lg border-b border-gray-100 pb-2 mb-4">Order Summary</h3>
+              <dl className="space-y-4 text-sm">
+                <div>
+                  <dt className="text-gray-500 mb-1">Product</dt>
+                  <dd className="font-medium text-lg">{order.productName}</dd>
+                </div>
+                <div>
+                  <dt className="text-gray-500 mb-1">Total Amount</dt>
+                  <dd className="font-medium text-lg">৳{order.price}</dd>
+                </div>
+              </dl>
             </div>
           </div>
 
-          <div className="text-center pt-4">
-            <p className="text-sm text-gray-500">
-              Share this link to track this order: 
-              <br />
-              <code className="bg-gray-100 px-2 py-1 rounded text-xs">
-                {process.env.NEXTAUTH_URL || 'http://localhost:3000'}/track/{order.shareableLink}
-              </code>
+          <div className="pt-8 mt-8 border-t border-gray-50 text-center">
+            <p className="text-xs text-gray-400 mb-4">
+              Need help? Contact the merchant directly.
             </p>
           </div>
         </div>
